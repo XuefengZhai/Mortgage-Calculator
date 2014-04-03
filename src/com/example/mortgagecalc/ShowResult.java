@@ -1,3 +1,7 @@
+/*
+ * Class for Show Result activity
+ * Xuefeng Zhai xzhai@cmu.edu
+ */
 package com.example.mortgagecalc;
 
 import android.app.Activity;

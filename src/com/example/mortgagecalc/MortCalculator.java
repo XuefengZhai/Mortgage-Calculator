@@ -1,8 +1,8 @@
+/*
+ * Class for Mortgage Calculator activity
+ * Xuefeng Zhai xzhai@cmu.edu
+ */
 package com.example.mortgagecalc;
-
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import com.example.mortgagecalc.R;
 
@@ -18,17 +18,23 @@ import java.text.DateFormatSymbols;
 
 public class MortCalculator extends Activity {
 	
+	/*
+	 * Properties for EditText
+	 */
 	private EditText purchasePriceET;
 	private EditText downPaymentET;
 	private EditText mortgageTermET;
 	private EditText interestRateET;
 	private EditText propertyTaxET;
-	private EditText propertyInsuranceET;//propertyInsurance;
-	private EditText zipCodeET;//zipCode;
-	private EditText monthET;//month;
-	private EditText yearET;//year;
+	private EditText propertyInsuranceET;
+	private EditText zipCodeET;
+	private EditText monthET;
+	private EditText yearET;
 	private TextView downResultTV;
 	
+	/*
+	 * Properties for numbers
+	 */
 	private double purchasePrice = 0;
 	private double downPayment = 0;
 	private int mortgageTerm = 0;
@@ -39,10 +45,12 @@ public class MortCalculator extends Activity {
 	private int month = 0;//month;
 	private int year = 0;//year;
 	
-	
 	private double monthlyPayment;
 	private double totalPayment;
 	
+	/*
+	 * onCreate method to initiate the layout
+	 */
 	public void onCreate(Bundle savedInstanceState) 
 	{
 	      super.onCreate(savedInstanceState); // call superclass's version
@@ -71,11 +79,14 @@ public class MortCalculator extends Activity {
 	      downPaymentET.addTextChangedListener(downPaymentWatcher);
 	      downResultTV = (TextView) findViewById(R.id.downResult);
 	      
-	      purchasePriceET.setText("200000");
+	      /*
+	       * Initiate the EditText fields
+	       */
+	      purchasePriceET.setText("300000");
 	      downPaymentET.setText("20");
 	      mortgageTermET.setText("30");
 	      interestRateET.setText("6.25");
-	      propertyTaxET.setText("3000");
+	      propertyTaxET.setText("4000");
 	      propertyInsuranceET.setText("1500");
 	      zipCodeET.setText("15213");
 	      monthET.setText("3");
@@ -83,6 +94,9 @@ public class MortCalculator extends Activity {
 	      
 	}
 	
+	/*
+	 * TextWatcher for purchase price to change the down payment
+	 */
 	private TextWatcher purchasePriceWatcher = new TextWatcher()
 	{
 	      public void onTextChanged(CharSequence s, int start, 
@@ -115,7 +129,10 @@ public class MortCalculator extends Activity {
 
 	};
 
-	
+	/*
+	 * TextWatcher for down payment % to change the down payment
+	 */
+
 	private TextWatcher downPaymentWatcher = new TextWatcher()
 	{
 	      public void onTextChanged(CharSequence s, int start, 
@@ -149,15 +166,23 @@ public class MortCalculator extends Activity {
 
 	};
 	
+	/*
+	 * Method to update the down payment TextView 
+	 */
 	private void updateDownpayment(){
 		
 		downResultTV.setText("$"+purchasePrice*(downPayment/100));
 		
 	}
 	
+	/*
+	 * Method for the calculate button to change activity with intent
+	 */
 	public void calculate(View view) {
 		
-		
+		/*
+		 * Get the user input
+		 */
 		purchasePrice = Double.parseDouble(purchasePriceET.getText().toString());
 		downPayment = Double.parseDouble(downPaymentET.getText().toString());
 		mortgageTerm = Integer.parseInt(mortgageTermET.getText().toString());
@@ -168,14 +193,25 @@ public class MortCalculator extends Activity {
 		month = Integer.parseInt(monthET.getText().toString());
 		year = Integer.parseInt(yearET.getText().toString());
 		
-		
+		/*
+		 * Create intent
+		 */
 		Intent intent = new Intent(this, ShowResult.class);
 		
+		/*
+		 * Calculate monthly payment and total payment
+		 */
 		monthlyPayment = calculateMonthlyPayment();
-		totalPayment = monthlyPayment *12*mortgageTerm;
+		totalPayment = monthlyPayment *12 * mortgageTerm;
 		
+		/*
+		 * Set format
+		 */
 		java.text.DecimalFormat df =new java.text.DecimalFormat("#,###.00");  
-
+		
+		/*
+		 * Calculate time
+		 */
 		int endYear = year+mortgageTerm;
 		String monthName =  new DateFormatSymbols().getMonths()[month-1];
 		
@@ -186,6 +222,9 @@ public class MortCalculator extends Activity {
 		startActivity(intent);
 	}
 	
+	/*
+	 * Calculate the monthly payment
+	 */
 	private double calculateMonthlyPayment(){
 		
 		double monthlyPayment;
@@ -193,8 +232,8 @@ public class MortCalculator extends Activity {
 		interestRate /=100;
 		double monthlyRate = interestRate /12.0;
 		int termInMonths = mortgageTerm * 12;
-		monthlyPayment = ((purchasePrice-downPayment)*monthlyRate)
-				/(1-Math.pow(1+monthlyRate, -termInMonths));
+		monthlyPayment = (((purchasePrice)*monthlyRate)
+				/(1-Math.pow(1+monthlyRate, -termInMonths)) )*(1-(double)(downPayment/100))+(interestRate+propertyTax)/12;
 		
 		return monthlyPayment;
 		
